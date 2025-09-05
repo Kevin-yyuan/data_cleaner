@@ -27,7 +27,7 @@ This tool automatically performs the following actions:
 **1. Clone the repository:**
 
 ```bash
-git clone [https://github.com/kevin-yyuan/data_cleaner.git](https://github.com/kevin-yyuan/data_cleaner.git)
+git clone [https://github.com/kevin-yyuan/data_cleaner.git]
 cd data_cleaner
 ```
 
