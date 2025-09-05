@@ -19,7 +19,7 @@ This tool automatically performs the following actions:
 - ✅ **Removes Duplicate Rows:** Identifies and deletes any identical shipment records.
 - ✍️ **Standardizes Text:** Cleans text fields (ports, carriers, status) by trimming whitespace and converting to a consistent uppercase format.
 - 📅 **Unifies Date Formats:** Parses multiple date formats (e.g., `YYYY-MM-DD`, `MM/DD/YYYY`, `Month Day, YYYY`) and converts them to the standard `YYYY-MM-DD`.
-- 💲 **Cleans Numeric Data:** Strips currency symbols (`$`) and commas from the `cost` column and converts it to a proper numeric type.
+- 💲 **Cleans Numeric Data:** Strips currency symbols (`) and commas from the `cost` column and converts it to a proper numeric type.
 - 🗑️ **Handles Missing Values:** Identifies and removes rows that have critical information missing, ensuring the final dataset is complete.
 
 ## How to Use
@@ -60,19 +60,51 @@ def clean_data(input, output):
     print(f"Loading data from {input}...")
     df = pd.read_csv(input)
 
+    print("\n--- Starting Cleaning Process ---")
+
     # 1. Remove duplicate rows
     initial_rows = len(df)
     df_clean = remove_duplicates(df)
     print(f"Removed {initial_rows - len(df_clean)} duplicate rows.")
 
-    # ... other cleaning steps ...
+    # 2. Clean text fields
+    text_cols = ['origin_port', 'destination_port', 'carrier', 'status']
+    df_clean = clean_text(df_clean, text_cols)
+    print(f"Cleaned and standardized text columns: {text_cols}")
+
+    # 3. Standardize date formats
+    date_cols = ['departure_date', 'arrival_date']
+    df_clean = standardize_dates(df_clean, date_cols)
+    print(f"Standardized date columns: {date_cols}")
+
+    # 4. Clean the cost column
+    df_clean = clean_cost(df_clean, 'cost')
+    print("Cleaned cost column to numeric format.")
+
+    # 5. Handle missing values (simple strategy: drop rows with any missing data)
+    initial_rows = len(df_clean)
+    df_clean = df_clean.dropna()
+    print(f"Dropped {initial_rows - len(df_clean)} rows with missing values.")
+
+    print("\n--- Cleaning Complete ---")
+    print("\nFinal clean data sample:")
+    print(df_clean.head())
 
     # Save the cleaned data
     df_clean.to_csv(output, index=False)
     print(f"\n✅ Success! Clean data saved to {output}")
+    print(f"Total rows in clean file: {len(df_clean)}")
 ```
 
 ## Tech Stack
 
 - **Language:** Python
 - **Libraries:** Pandas, Click
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! If you have ideas for new features, improvements, or bug fixes, please open an issue or submit a pull request.
